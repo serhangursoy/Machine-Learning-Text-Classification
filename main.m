@@ -1,13 +1,21 @@
 
-% QUICK TEST - NOT SO RESPONSIVE THO'
-[realRes, datArr] = getProcessedData(1);
+ %'QUICK TEST - NOT SO RESPONSIVE THO'
+[realRes, datArr] = getProcessedData(2);
 [a] = learningParameter(datArr,realRes);
+bgMatrix = zeros(2,1);
+bgMatrix(1,1) = backgroundProbability(realRes , 'student');
+bgMatrix(2,1) = backgroundProbability(realRes , 'faculty');
+[testRes , testData] = getProcessedData(1);
+predict1 = predict(276 , testData , bgMatrix , a);
+
+
+
 % mode = 1 --> TEST
 % mode = 2 --> TRAIN
 % Might be a little slow :)
 function [realResults, DataArray] = getProcessedData(mode)
-TEST_PATH  = "Data/testdata.txt";
-TRAIN_PATH = "Data/traindata.txt";
+TEST_PATH  = 'Data/testdata.txt';
+TRAIN_PATH = 'Data/traindata.txt';
 
 limit = 399;
 if mode == 1
@@ -36,8 +44,6 @@ realResults = labelArray;
 DataArray   = resultData;
 clearvars rawLine tempArr labelDataArray tempArrData i TEST_PATH TRAIN_PATH PATH labelArray dataArray limit;
 end
-
-
 function [numberOccurMatrix] = learningParameter(dataArray, labelArray)
 numberOccurMatrix = zeros(2,1309);
 
@@ -59,7 +65,7 @@ allSum = sum(answer,2);
 answer = answer / allSum;
 numberOccurMatrix(1,:) = answer;
 
-[r c]=size(dataArray);
+[r, c]=size(dataArray);
 
 classTwoSub = dataArray(termIndex:r,:);
 answer = zeros(1,1309);
@@ -71,4 +77,32 @@ answer = answer / allSum;
 numberOccurMatrix(2,:) = answer;
 
 numberOccurMatrix = log(numberOccurMatrix);
+end
+function bp = backgroundProbability(labelMatrix , label)
+    [sum , ~] = size(labelMatrix);
+    labelCount = 0;
+    for i = 1:sum
+        if(labelMatrix{i,1} == label)
+            labelCount = labelCount + 1;
+        end
+    end
+    bp = labelCount/sum;
+end 
+
+function maxArg = predict(predictNo , dataArray , backgroundProbability , probabilityMatrix)
+    studentProb = 0;
+    facultyProb = 0;
+    for i = 1:1309
+        studentProb = studentProb + (dataArray{predictNo,i} * probabilityMatrix(1 , i));
+        facultyProb = facultyProb + (dataArray{predictNo,i} * probabilityMatrix(2 , i));
+    end 
+    studentProb = studentProb + log(backgroundProbability(1));
+    facultyProb = facultyProb + log(backgroundProbability(2));
+    
+    if(studentProb > facultyProb)
+        maxArg = 'student';
+    else
+        maxArg = 'faculty';
+    end
+    
 end
