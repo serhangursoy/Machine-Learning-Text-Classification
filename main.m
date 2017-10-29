@@ -1,15 +1,13 @@
 
 % QUICK TEST - NOT SO RESPONSIVE THO'
 [realRes, datArr] = getProcessedData(1);
-studentP = backgroundProbability(realRes , 'student');
-facultyP = backgroundProbability(realRes , 'faculty');
-
+[a] = learningParameter(datArr,realRes);
 % mode = 1 --> TEST
 % mode = 2 --> TRAIN
 % Might be a little slow :)
 function [realResults, DataArray] = getProcessedData(mode)
-TEST_PATH  = 'Data/testdata.txt';
-TRAIN_PATH = 'Data/traindata.txt';
+TEST_PATH  = "Data/testdata.txt";
+TRAIN_PATH = "Data/traindata.txt";
 
 limit = 399;
 if mode == 1
@@ -40,13 +38,37 @@ clearvars rawLine tempArr labelDataArray tempArrData i TEST_PATH TRAIN_PATH PATH
 end
 
 
-function bp = backgroundProbability(labelMatrix , label)
-    [sum , ~] = size(labelMatrix);
-    labelCount = 0;
-    for i = 1:sum
-        if(labelMatrix{i,1} == label)
-            labelCount = labelCount + 1;
-        end
+function [numberOccurMatrix] = learningParameter(dataArray, labelArray)
+numberOccurMatrix = zeros(2,1309);
+
+termIndex = 1;
+while 1
+    if labelArray{termIndex} == 'faculty'
+        termIndex = termIndex -1;
+        break;
     end
-    bp = labelCount/sum;
-end 
+    termIndex = termIndex + 1;
+end
+
+classOneSub = dataArray(1:termIndex,:);
+answer = zeros(1,1309);
+for k = 1:1309
+    answer(1,k) = sum( classOneSub{k} );
+end
+allSum = sum(answer,2);
+answer = answer / allSum;
+numberOccurMatrix(1,:) = answer;
+
+[r c]=size(dataArray);
+
+classTwoSub = dataArray(termIndex:r,:);
+answer = zeros(1,1309);
+for k = 1:1309
+    answer(1,k) = sum( classTwoSub{k} );
+end
+allSum = sum(answer,2);
+answer = answer / allSum;
+numberOccurMatrix(2,:) = answer;
+
+numberOccurMatrix = log(numberOccurMatrix);
+end
