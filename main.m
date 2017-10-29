@@ -1,6 +1,8 @@
 
 % QUICK TEST - NOT SO RESPONSIVE THO'
 [realRes, datArr] = getProcessedData(1);
+studentP = backgroundProbability(realRes , 'student');
+facultyP = backgroundProbability(realRes , 'faculty');
 
 % mode = 1 --> TEST
 % mode = 2 --> TRAIN
@@ -36,3 +38,15 @@ realResults = labelArray;
 DataArray   = resultData;
 clearvars rawLine tempArr labelDataArray tempArrData i TEST_PATH TRAIN_PATH PATH labelArray dataArray limit;
 end
+
+
+function bp = backgroundProbability(labelMatrix , label)
+    [sum , ~] = size(labelMatrix);
+    labelCount = 0;
+    for i = 1:sum
+        if(labelMatrix{i,1} == label)
+            labelCount = labelCount + 1;
+        end
+    end
+    bp = labelCount/sum;
+end 
