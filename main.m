@@ -50,3 +50,21 @@ function bp = backgroundProbability(labelMatrix , label)
     end
     bp = labelCount/sum;
 end 
+
+function maxArg = predict(predictNo , dataArray , backgroundProbability , probabilityMatrix)
+    studentProb = 0;
+    facultyProb = 0;
+    for i = 1:1309
+        studentProb = studentProb + (dataArray(predictNo,i) * probabilityMatrix(1 , i));
+        facultyProb = facultyProb + (dataArray(predictNo,i) * probabilityMatrix(2 , i));
+    end 
+    studentProb = studentProb + log(backgroundProbability(1));
+    facultyProb = facultyProb + log(backgroundProbability(2));
+    
+    if(studentProb > facultyProb)
+        maxArg = 'student';
+    else
+        maxArg = 'faculty';
+    end
+    
+end
