@@ -6,8 +6,8 @@
 % mode = 2 --> TRAIN
 % Might be a little slow :)
 function [realResults, DataArray] = getProcessedData(mode)
-TEST_PATH  = "Data/testdata.txt";
-TRAIN_PATH = "Data/traindata.txt";
+TEST_PATH  = 'Data/testdata.txt';
+TRAIN_PATH = 'Data/traindata.txt';
 
 limit = 399;
 if mode == 1
