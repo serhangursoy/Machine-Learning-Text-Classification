@@ -1,4 +1,3 @@
-
 % %'QUICK TEST - NOT SO RESPONSIVE THO'
 % [realRes, datArr] = getProcessedData(2);
 % [a] = learningParameter(datArr,realRes);
@@ -163,7 +162,7 @@ dataArrayNumber = cellfun(@str2double,dataArray);
 termIndex = 1;
 while 1
     if labelData{termIndex} == 'faculty'
-        labelData = termIndex -1;
+        termIndex = termIndex -1;
         break;
     end
     termIndex = termIndex + 1;
@@ -172,17 +171,17 @@ end
 N00=0; N01=0; N11=0; N10=0; N=0;
 C00=0; C01=0; C11=0; C10=0; C=0;
 
-[~,h] = size(dataArray);
+[h,~] = size(dataArray);
 
 for co = 1:1309
     for ro = 1:h        
-        if dataArrayNumber(ro,co) > 0 && labelData(ro) == 'student'
+        if (dataArrayNumber(ro,co) > 0 & labelData{ro,1} == 'student')
             N00 = N00 + 1;
             C11 = C11 + 1;
-        elseif dataArrayNumber(ro,co) == 0 && labelData(ro) == 'student'
+        elseif (dataArrayNumber(ro,co) == 0 & labelData{ro,1} == 'student')
             N01 = N01 + 1;
             C10 = C10 + 1;
-        elseif dataArrayNumber(ro,co) > 0 && labelData(ro) == 'faculty'
+        elseif (dataArrayNumber(ro,co) > 0 & labelData{ro,1} == 'faculty')
             N10 = N10 + 1;
             C01 = C01 + 1;
         else
