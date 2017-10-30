@@ -1,11 +1,11 @@
 
-%'QUICK TEST - NOT SO RESPONSIVE THO'
-[realRes, datArr] = getProcessedData(2);
-[a] = learningParameter(datArr,realRes);
-bgMatrix = zeros(2,1);
-bgMatrix(1,1) = backgroundProbability(realRes , 'student');
-bgMatrix(2,1) = backgroundProbability(realRes , 'faculty');
-[testRes , testData] = getProcessedData(1);
+% %'QUICK TEST - NOT SO RESPONSIVE THO'
+% [realRes, datArr] = getProcessedData(2);
+% [a] = learningParameter(datArr,realRes);
+% bgMatrix = zeros(2,1);
+% bgMatrix(1,1) = backgroundProbability(realRes , 'student');
+% bgMatrix(2,1) = backgroundProbability(realRes , 'faculty');
+% [testRes , testData] = getProcessedData(1);
 
 
 %prediction1 = predict(1 , datArr , bgMatrix , a);
@@ -16,6 +16,7 @@ end
 
 cm = confusionMatrix(realRes , predictions);
 
+RANKS = rankFeatures(realRes, datArr);
 % xlswrite('arr.xlsx',datArr);
 
 % mode = 1 --> TEST
@@ -110,9 +111,8 @@ for i = 1:1309
         end
     end
 end
-%studentProb = studentProb + log(backgroundProbability(1));
-%facultyProb = facultyProb + log(backgroundProbability(2));
-
+studentProb = studentProb + log(backgroundProbability(1));
+facultyProb = facultyProb + log(backgroundProbability(2));
 
 disp(studentProb > facultyProb);
 if(studentProb > facultyProb)
@@ -151,4 +151,61 @@ function cm = confusionMatrix(realMatrix , predictionMatrix)
     cm(1,2) = studentFalse;
     cm(2,1) = facultyFalse;
     cm(2,2) = facultyTrue;
+end
+
+% N00 - Its Student but number is something bigger than zero
+% N01 - Its Student but number is 0
+% N10 - Its Faculty but number is something bigger than zero
+% N11 - Its Faculty but number is 0
+function [featureRanks] = rankFeatures(labelData,dataArray)
+featureRanks = zeros(2,1309);
+dataArrayNumber = cellfun(@str2double,dataArray);
+termIndex = 1;
+while 1
+    if labelData{termIndex} == 'faculty'
+        labelData = termIndex -1;
+        break;
+    end
+    termIndex = termIndex + 1;
+end
+
+N00=0; N01=0; N11=0; N10=0; N=0;
+C00=0; C01=0; C11=0; C10=0; C=0;
+
+[~,h] = size(dataArray);
+
+for co = 1:1309
+    for ro = 1:h        
+        if dataArrayNumber(ro,co) > 0 && labelData(ro) == 'student'
+            N00 = N00 + 1;
+            C11 = C11 + 1;
+        elseif dataArrayNumber(ro,co) == 0 && labelData(ro) == 'student'
+            N01 = N01 + 1;
+            C10 = C10 + 1;
+        elseif dataArrayNumber(ro,co) > 0 && labelData(ro) == 'faculty'
+            N10 = N10 + 1;
+            C01 = C01 + 1;
+        else
+            N11 = N11 + 1;
+            C00 = C00 + 1;
+        end
+    end
+    
+    C = C00 + C01 + C11 + C10;
+    N = N00 + N01 + N11 + N10;
+    
+    ResN = ((N11/N)*log2( (N*N11) / ((N11+N10)*(N01+N11))));
+    ResN = ResN + ((N01/N)*log2( (N*N01) / ((N01+N00)*(N01+N11))));
+    ResN = ResN + ((N10/N)*log2( (N*N10) / ((N11+N10)*(N10+N00))));
+    ResN = ResN + ((N00/N)*log2( (N*N00) / ((N01+N00)*(N10+N00))));
+    
+    ResC = ((C11/C)*log2( (C*C11) / ((C11+C10)*(C01+C11))));
+    ResC = ResC + ((C01/C)*log2( (C*C01) / ((C01+C00)*(C01+C11))));
+    ResC = ResC + ((C10/C)*log2( (C*C10) / ((C11+C10)*(C10+C00))));
+    ResC = ResC + ((C00/C)*log2( (C*C00) / ((C01+C00)*(C10+C00))));
+    
+    featureRanks(1,co) = ResN;
+    featureRanks(2,co) = ResC;
+end
+
 end
