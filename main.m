@@ -1,16 +1,24 @@
 
  %'QUICK TEST - NOT SO RESPONSIVE THO'
 [realRes, datArr] = getProcessedData(2);
+<<<<<<< HEAD
 a = learningParameter(datArr,realRes);
+=======
+[a] = learningParameter(datArr,realRes);
+>>>>>>> refs/remotes/origin/master
 bgMatrix = zeros(2,1);
 bgMatrix(1,1) = backgroundProbability(realRes , 'student');
 bgMatrix(2,1) = backgroundProbability(realRes , 'faculty');
 [testRes , testData] = getProcessedData(1);
+<<<<<<< HEAD
 
 predictions = cell(1,400);
 for i = 1:400
     predictions{1,i} = predict(i , testData , bgMatrix , a);
 end
+=======
+predict1 = predict(276 , testData , bgMatrix , a);
+>>>>>>> refs/remotes/origin/master
 
 
 
@@ -71,6 +79,7 @@ numberOccurMatrix(1,:) = answer;
 
 [r, ~]=size(dataArray);
 
+
 classTwoSub = dataArray(termIndex:r,:);
 answer = zeros(1,1309);
 for k = 1:1309
@@ -80,7 +89,8 @@ allSum = sum(answer,2);
 answer = answer / allSum;
 numberOccurMatrix(2,:) = answer;
 
-%numberOccurMatrix = log(numberOccurMatrix);
+
+numberOccurMatrix = log(numberOccurMatrix);
 end
 function bp = backgroundProbability(labelMatrix , label)
     [sum , ~] = size(labelMatrix);
@@ -97,6 +107,7 @@ function maxArg = predict(predictNo , dataArray , backgroundProbability , probab
     studentProb = 0;
     facultyProb = 0;
     for i = 1:1309
+
         %log0 * 0 = 0 TODO
         studentProb = studentProb + (dataArray{predictNo,i} * log(probabilityMatrix(1 , i)));
         facultyProb = facultyProb + (dataArray{predictNo,i} * log(probabilityMatrix(2 , i)));
