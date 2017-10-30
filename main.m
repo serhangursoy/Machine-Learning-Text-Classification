@@ -8,11 +8,13 @@ bgMatrix(2,1) = backgroundProbability(realRes , 'faculty');
 [testRes , testData] = getProcessedData(1);
 
 
+%prediction1 = predict(1 , datArr , bgMatrix , a);
 predictions = cell(1,400);
-for i = 1:400
-    predictions{1,i} = predict(i , testData , bgMatrix , a);
+for i = 1:1000
+    predictions{1,i} = predict(i , datArr , bgMatrix , a);
 end
 
+cm = confusionMatrix(realRes , predictions);
 
 % xlswrite('arr.xlsx',datArr);
 
@@ -65,13 +67,15 @@ end
 
 classOneSub = dataArrayNumber(1:termIndex,:);
 answer = sum(classOneSub);
+
 allSum = sum(answer,2);
+
 answer = answer / allSum;
 numberOccurMatrix(1,:) = answer;
 
 [r, ~]=size(dataArray);
 
-classTwoSub = dataArrayNumber(termIndex:r,:);
+classTwoSub = dataArrayNumber(termIndex+1:r,:);
 answer = sum(classTwoSub);
 allSum = sum(answer,2);
 answer = answer / allSum;
@@ -98,23 +102,53 @@ facultyProb = 0;
 for i = 1:1309
     if dataArray{predictNo,i} ~= 0
         if probabilityMatrix(1,i) ~= 0
-            studentProb = studentProb + (dataArray{predictNo,i} * log(probabilityMatrix(1 , i)));
+            studentProb = studentProb + (double(dataArray{predictNo,i}) * log(probabilityMatrix(1 , i)+ 1));
         end
         
         if probabilityMatrix(2,i) ~= 0
-            facultyProb = facultyProb + (dataArray{predictNo,i} * log(probabilityMatrix(2 , i)));
+            facultyProb = facultyProb + (double(dataArray{predictNo,i}) * log(probabilityMatrix(2 , i)+ 1));
         end
     end
 end
-studentProb = studentProb + log(backgroundProbability(1));
-facultyProb = facultyProb + log(backgroundProbability(2));
+%studentProb = studentProb + log(backgroundProbability(1));
+%facultyProb = facultyProb + log(backgroundProbability(2));
 
+
+disp(studentProb > facultyProb);
 if(studentProb > facultyProb)
     maxArg = 'student';
-elseif(studentProb == facultyProb)
-        maxArg = 'anan';
 else
     maxArg = 'faculty';
 end
 
+end
+
+function cm = confusionMatrix(realMatrix , predictionMatrix)
+    [r , c]  = size(realMatrix);
+    cm = zeros(2,2);
+    studentTrue = 0;
+    studentFalse = 0;
+    facultyTrue = 0;
+    facultyFalse = 0;
+    for i = 1:r
+        for j = 1:c
+            if(realMatrix{i,j} == 'student')
+                if(predictionMatrix{j,i} == 'student')
+                    studentTrue = studentTrue + 1;
+                else
+                    studentFalse = studentFalse + 1;
+                end
+            else
+                if(predictionMatrix{j,i} == 'faculty')
+                    facultyTrue = facultyTrue + 1;
+                else
+                    facultyFalse = facultyFalse + 1;
+                end
+            end
+        end
+    end
+    cm(1,1) = studentTrue;
+    cm(1,2) = studentFalse;
+    cm(2,1) = facultyFalse;
+    cm(2,2) = facultyTrue;
 end
