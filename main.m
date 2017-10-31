@@ -7,7 +7,7 @@ bgMatrix(2,1) = backgroundProbability(realRes , 'faculty');
 [testRes , testData] = getProcessedData(1);
 
 
-%prediction1 = predict(1 , datArr , bgMatrix , a);
+
 predictions = cell(1,400);
 for i = 1:1000
     predictions{1,i} = predict(i , datArr , bgMatrix , a);
@@ -15,7 +15,7 @@ end
 
 cm = confusionMatrix(realRes , predictions);
 
-RANKS = rankFeatures(realRes, datArr);
+[RANKS ,tops] = rankFeatures(realRes, datArr);
 % xlswrite('arr.xlsx',datArr);
 
 % mode = 1 --> TEST
@@ -80,6 +80,7 @@ answer = sum(classTwoSub);
 allSum = sum(answer,2);
 answer = answer / allSum;
 numberOccurMatrix(2,:) = answer;
+assignin('base', 'logsuzxd', numberOccurMatrix);
 end
 
 
@@ -154,7 +155,7 @@ end
 % N01 - Its Student but number is 0
 % N10 - Its Faculty but number is something bigger than zero
 % N11 - Its Faculty but number is 0
-function [featureRanks] = rankFeatures(labelData,dataArray)
+function [featureRanks , top10] = rankFeatures(labelData,dataArray)
 featureRanks = zeros(2,1309);
 dataArrayNumber = cellfun(@str2double,dataArray);
 termIndex = 1;
@@ -204,5 +205,12 @@ for co = 1:1309
     featureRanks(1,co) = ResN;
     featureRanks(2,co) = ResC;
 end
-
+    
+    top10 = zeros(2,10);
+    for a = 1:10
+        [ c , ind] = max(featureRanks(1,:));
+        top10(1,a) = ind;
+        top10(2,a) = c;
+        featureRanks(1,ind) = -c;
+    end
 end
