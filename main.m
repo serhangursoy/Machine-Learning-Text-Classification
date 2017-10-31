@@ -8,12 +8,17 @@ bgMatrix(2,1) = backgroundProbability(realRes , 'faculty');
 
 
 
-predictions = cell(1,400);
+predictionsTraining = cell(1,1000);
 for i = 1:1000
-    predictions{1,i} = predict(i , datArr , bgMatrix , a);
+    predictionsTraining{1,i} = predict(i , datArr , bgMatrix , a);
 end
+cmTraining = confusionMatrix(realRes , predictionsTraining);
 
-cm = confusionMatrix(realRes , predictions);
+predictionsTest = cell(1,400);
+for i = 1:400
+    predictionsTest{1,i} = predict(i , testData , bgMatrix , a);
+end
+cmTest = confusionMatrix(testRes , predictionsTest);
 
 [RANKS ,tops] = rankFeatures(realRes, datArr);
 % xlswrite('arr.xlsx',datArr);
