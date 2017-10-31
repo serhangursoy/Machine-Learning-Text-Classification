@@ -1,10 +1,10 @@
 % %'QUICK TEST - NOT SO RESPONSIVE THO'
-% [realRes, datArr] = getProcessedData(2);
-% [a] = learningParameter(datArr,realRes);
-% bgMatrix = zeros(2,1);
-% bgMatrix(1,1) = backgroundProbability(realRes , 'student');
-% bgMatrix(2,1) = backgroundProbability(realRes , 'faculty');
-% [testRes , testData] = getProcessedData(1);
+[realRes, datArr] = getProcessedData(2);
+[a] = learningParameter(datArr,realRes);
+bgMatrix = zeros(2,1);
+bgMatrix(1,1) = backgroundProbability(realRes , 'student');
+bgMatrix(2,1) = backgroundProbability(realRes , 'faculty');
+[testRes , testData] = getProcessedData(1);
 
 
 %prediction1 = predict(1 , datArr , bgMatrix , a);
@@ -80,7 +80,6 @@ answer = sum(classTwoSub);
 allSum = sum(answer,2);
 answer = answer / allSum;
 numberOccurMatrix(2,:) = answer;
-assignin('base', 'logsuzxd', numberOccurMatrix);
 end
 
 
@@ -113,7 +112,6 @@ end
 studentProb = studentProb + log(backgroundProbability(1));
 facultyProb = facultyProb + log(backgroundProbability(2));
 
-disp(studentProb > facultyProb);
 if(studentProb > facultyProb)
     maxArg = 'student';
 else
@@ -175,13 +173,13 @@ C00=0; C01=0; C11=0; C10=0; C=0;
 
 for co = 1:1309
     for ro = 1:h        
-        if (dataArrayNumber(ro,co) > 0 & labelData{ro,1} == 'student')
+        if (dataArrayNumber(ro,co) > 0 && ro<= termIndex)
             N00 = N00 + 1;
             C11 = C11 + 1;
-        elseif (dataArrayNumber(ro,co) == 0 & labelData{ro,1} == 'student')
+        elseif (dataArrayNumber(ro,co) == 0 && ro<= termIndex)
             N01 = N01 + 1;
             C10 = C10 + 1;
-        elseif (dataArrayNumber(ro,co) > 0 & labelData{ro,1} == 'faculty')
+        elseif (dataArrayNumber(ro,co) > 0 && ro > termIndex)
             N10 = N10 + 1;
             C01 = C01 + 1;
         else
