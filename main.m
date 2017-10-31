@@ -13,16 +13,16 @@ for i = 1:1000
     predictionsTraining{1,i} = predict(i , datArr , bgMatrix , a);
 end
 cmTraining = confusionMatrix(realRes , predictionsTraining);
-accuracyTraining = cmTraining(0,0)+cmTraining(1,1);
-accuracyTraining = accuracyTraining / (accuracyTraining + cmTraining(0,1) + cmTraining(1,0));
+accuracyTraining = cmTraining(1,1) + cmTraining(2,2);
+accuracyTraining = accuracyTraining / (accuracyTraining + cmTraining(1,2) + cmTraining(2,1));
 
 predictionsTest = cell(1,400);
 for i = 1:400
     predictionsTest{1,i} = predict(i , testData , bgMatrix , a);
 end
 cmTest = confusionMatrix(testRes , predictionsTest);
-accuracyTest = cmTest(0,0)+cmTest(1,1);
-accuracyTest = accuracyTest / (accuracyTest + cmTest(0,1) + cmTest(1,0));
+accuracyTest = cmTest(1,1)+cmTest(2,2);
+accuracyTest = accuracyTest / (accuracyTest + cmTest(1,2) + cmTest(2,1));
 
 
 [RANKS ,tops] = rankFeatures(realRes, datArr);
